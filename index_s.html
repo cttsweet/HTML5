@@ -1,0 +1,100 @@
+<!DOCTYPE HTML> 
+<html> 
+<head>
+<title>Play Snake Game</title>
+<style type="text/css">
+    body {text-align:center;}
+    canvas { border:5px dotted #ccc; }
+    h1 { font-size:50px; text-align: center; margin: 0; padding-bottom: 25px;}
+</style>
+<script type="text/javascript"> 
+function play_game(){
+    var c=document.getElementById("myCanvas");
+    var time1 = 160; //蛇的速度
+    var time2 = 10000;
+    var cxt=c.getContext("2d"); 
+    var x = y = 8;
+    var a = 0; //食物横坐标 
+    var b = 0; //食物纵坐标 
+    var t = 4; //蛇身长 
+    var map = []; //记录蛇运行路径 
+    var size = 8; //蛇身单元大小 
+    var direction = 2; // 1 向上 2 向右 0 左 3下 
+    // 随机放置食物
+    interval2 = window.setInterval(frog_dis, time2);
+    interval3 = window.setInterval(rand_frog, time2);
+    function rand_frog() {
+        a = Math.ceil(Math.random() * 49);
+        b = Math.ceil(Math.random() * 49);
+        cxt.fillStyle = "#000000"; //内部填充颜色 
+        cxt.strokeStyle = "#000000"; //边框颜色 
+        cxt.fillRect(a * 8, b * 8, 8, 8); //绘制矩形 
+    }
+    function frog_dis() {
+        cxt.fillStyle = "#fff"; //内部填充颜色 
+        cxt.strokeStyle = "#fff"; //边框颜色 
+        cxt.fillRect(a * 8, b * 8, 8, 8); //绘制矩形
+    }
+
+    rand_frog();
+    interval1 = window.setInterval(set_game_speed, time1); // 移动蛇 
+    function set_game_speed() { // 移动蛇
+        var score = 5 * (t - 4); 
+        switch(direction){ 
+            case 1:y = y-size;break; 
+            case 2:x = x+size;break; 
+            case 0:x = x-size;break; 
+            case 3:y = y+size;break;
+        }
+        if (x > 400 || y > 400 || x < 0 || y < 0) {
+            var info = "Sorry,you lose!(Hit the wall...) And your score is " + score + ".Play again?";
+            var r = confirm(info)
+            if (r == true) {
+                window.location.reload();
+            }
+            else {
+                window.close();
+            }
+        }
+        for (var i = 0; i < map.length; i++) {
+            if (parseInt(map[i].x) == x && parseInt(map[i].y) == y) {
+                var info = "Sorry,you lose!(Hit yourself...) And your score is " + score + ".Play again?";
+                var r = confirm(info)
+                if (r == true) {
+                    window.location.reload();
+                }
+                else {
+                    window.close();
+                }
+            }
+        }
+        if (map.length>t) { //保持蛇身长度 
+            var cl = map.shift(); //删除数组第一项，并且返回原元素 
+            cxt.clearRect(cl['x'], cl['y'], size, size); 
+        }; 
+        map.push({'x':x,'y':y}); //将数据添加到原数组尾部 
+        cxt.fillStyle = "#006699";//内部填充颜色 
+        cxt.strokeStyle = "#006699";//边框颜色 
+        cxt.fillRect(x, y, size, size);//绘制矩形 
+        if((a*8)==x && (b*8)==y){ //吃食物 
+            rand_frog();
+            t++; 
+        } 
+    } 
+    document.onkeydown = function(e) { //改变蛇方向 
+        var code = e.keyCode - 37; 
+        switch(code){ 
+            case 1 : direction = 1;break;//上 
+            case 2 : direction = 2;break;//右 
+            case 3 : direction = 3;break;//下 
+            case 0 : direction = 0;break;//左 
+        } 
+    } 
+} 
+</script> 
+</head>
+<body onload="play_game()"> 
+    <h1>Play Snake Game</h1>
+    <canvas id="myCanvas" width="400" height="400"></canvas> 
+</body> 
+</html> 
